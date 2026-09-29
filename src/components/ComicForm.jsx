@@ -7,6 +7,7 @@ import {
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined'
 import { useComics } from '../context/ComicsContext'
+import { useOnomatopeya } from '../context/OnomatopeyaContext'
 import { buscarDuplicado, FORMATOS, limpiarDatosComic, nombreCompleto, validarComic, valoresUnicos } from '../lib/coleccion'
 import { TIPOS_ACEPTADOS } from '../lib/imagen'
 import Portada from './Portada'
@@ -39,6 +40,7 @@ function CampoSugerido({ etiqueta, valor, onChange, opciones }) {
  */
 export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guardar' }) {
   const { comics } = useComics()
+  const explotar = useOnomatopeya()
   const [valores, setValores] = useState(() => aFormulario(comic))
   const [portada, setPortada] = useState(undefined)
   const [errores, setErrores] = useState({})
@@ -76,10 +78,15 @@ export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guard
     setErrores(nuevosErrores)
     if (Object.keys(nuevosErrores).length > 0) return
 
+    // El punto se toma ahora: después de guardar se navega y el botón ya no existe.
+    const boton = e.nativeEvent.submitter?.getBoundingClientRect()
+    const origen = boton && { clientX: boton.left + boton.width / 2, clientY: boton.top + boton.height / 2 }
+
     setGuardando(true)
     setErrorGeneral(null)
     try {
       await onGuardar(datos, portada)
+      explotar(origen, '¡BAM!')
     } catch (error) {
       setErrorGeneral(error.message)
       setGuardando(false)

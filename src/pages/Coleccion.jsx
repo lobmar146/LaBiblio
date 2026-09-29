@@ -8,9 +8,9 @@ import { useComics } from '../context/ComicsContext'
 import {
   agruparPorSerie, estadisticas, FILTROS_INICIALES, filtrarComics, ordenarComics, valoresUnicos,
 } from '../lib/coleccion'
-import ComicCard from '../components/ComicCard'
 import Estadisticas from '../components/Estadisticas'
 import Filtros from '../components/Filtros'
+import GrillaComics from '../components/GrillaComics'
 import VistaSeries from '../components/VistaSeries'
 
 const POR_TANDA = 60
@@ -115,17 +115,10 @@ export default function Coleccion() {
         <VistaSeries grupos={grupos} />
       ) : (
         <>
-          <Box
-            sx={{
-              display: 'grid',
-              gap: { xs: 1.5, sm: 2.5 },
-              gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(auto-fill, minmax(170px, 1fr))' },
-            }}
-          >
-            {resultado.slice(0, cantidad).map((comic) => (
-              <ComicCard key={comic.id} comic={comic} />
-            ))}
-          </Box>
+          <GrillaComics
+            comics={resultado.slice(0, cantidad)}
+            etiquetaPrimero={filtrosDiferidos.orden === 'recientes' ? 'Último agregado' : null}
+          />
           {cantidad < resultado.length && (
             <Box sx={{ textAlign: 'center' }}>
               <Button variant="outlined" onClick={() => setTanda({ clave: claveFiltros, cantidad: cantidad + POR_TANDA })}>

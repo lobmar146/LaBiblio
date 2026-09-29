@@ -11,6 +11,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import { useAuth } from '../context/AuthContext'
 import { useComics } from '../context/ComicsContext'
+import { useOnomatopeya } from '../context/OnomatopeyaContext'
 import { actualizarComic, borrarComic, obtenerComic } from '../lib/comics'
 import { FORMATOS, nombreCompleto } from '../lib/coleccion'
 import Portada from '../components/Portada'
@@ -29,6 +30,7 @@ export default function ComicDetalle() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { esAdmin } = useAuth()
+  const explotar = useOnomatopeya()
   const { comics, cargando: cargandoLista, guardarLocal, quitarLocal } = useComics()
   const enLista = comics.find((c) => c.id === id)
 
@@ -66,7 +68,8 @@ export default function ComicDetalle() {
     )
   }
 
-  const alternarLeido = async () => {
+  const alternarLeido = async (e) => {
+    if (!comic.leido) explotar(e, '¡CHAN!')
     setOcupado(true)
     setErrorAccion(null)
     try {
@@ -78,7 +81,8 @@ export default function ComicDetalle() {
     }
   }
 
-  const borrar = async () => {
+  const borrar = async (e) => {
+    explotar(e, '¡KABOOM!')
     setOcupado(true)
     try {
       await borrarComic(comic)

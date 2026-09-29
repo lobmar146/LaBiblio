@@ -5,7 +5,9 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // Los componentes de React Bits son código de terceros copiado casi tal cual (ver el encabezado
+  // de cada uno). Quedan fuera del lint para poder compararlos y actualizarlos con el original.
+  globalIgnores(['dist', 'src/components/ReactBits/**']),
   {
     files: ['**/*.{js,jsx,mjs}'],
     extends: [

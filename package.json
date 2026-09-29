@@ -19,6 +19,8 @@
     "@mui/icons-material": "^9.4.0",
     "@mui/material": "^9.4.0",
     "@supabase/supabase-js": "^2.117.2",
+    "gsap": "^3.15.0",
+    "ogl": "^1.0.11",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.18.4"

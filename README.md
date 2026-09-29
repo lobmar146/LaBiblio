@@ -5,6 +5,7 @@ Mi colección de comics: qué tengo, qué me falta y qué quiero comprar.
 - **Colección pública** con portadas, búsqueda instantánea (sin tildes, por serie, número o autor) y filtros por estado, lectura, formato y editorial.
 - **Vista por serie**: un chip por número, para ver de un vistazo qué números tengo de cada serie.
 - **Lista de deseos**: cada comic es "Lo tengo" o "Lo quiero".
+- **Visor por serie**: en la vista por serie, cada serie tiene un slider con sus portadas y una transición de vuelta de página (shader WebGL). Un clic abre el comic que se está viendo.
 - **Aviso de duplicados** al cargar uno nuevo: "Ya tenés Batman #2".
 - **Portadas** sacadas con el celular: se achican en el navegador a WebP de ~100 KB antes de subirse.
 - Solo el admin (yo) puede agregar, editar o borrar. Lo controla la base de datos con Row Level Security, no el frontend.
@@ -72,3 +73,7 @@ src/context/             sesión/admin y colección en memoria
 src/components/          tarjeta, portada, filtros, formulario, vista por serie
 src/pages/               colección, detalle, alta, edición, login
 ```
+
+## Créditos
+
+`src/components/ReactBits/MorphSlider.jsx` es el [Morph Slider de React Bits](https://reactbits.dev/components/morph-slider) (David Haz, licencia MIT + Commons Clause). Se copió casi tal cual; las modificaciones están marcadas con `LA BIBLIO` en el archivo: la prop `onIndexChange` y la transición nueva `pageturn` (vuelta de página) en el shader.

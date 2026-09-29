@@ -132,7 +132,13 @@ export const theme = createTheme({
           fontFamily: LETRAS_TITULO, letterSpacing: '0.06em', fontSize: '1.05rem', color: alpha(tinta, 0.7),
           '&.Mui-focused': { color: tinta },
         },
-        shrink: { color: tinta },
+        // Con el campo lleno o enfocado, la etiqueta sube y queda montada sobre el borde de arriba: es
+        // una caja de rótulo amarilla (sobre el fondo oscuro, texto de tinta sin caja no se vería).
+        shrink: {
+          color: tinta, backgroundColor: sol, border: `2px solid ${tinta}`, borderRadius: 4, padding: '0 6px',
+          lineHeight: 1.3, zIndex: 2, maxWidth: 'calc(100% - 28px)', transform: 'translate(16px, -13px) scale(0.8)',
+          '&.Mui-focused': { backgroundColor: magenta },
+        },
       },
     },
     MuiFormHelperText: { styleOverrides: { root: { color: alpha(crema, 0.85), fontWeight: 700 } } },

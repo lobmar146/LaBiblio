@@ -82,7 +82,7 @@ export default function Filtros({ filtros, onChange, editoriales, resto }) {
       <Collapse in={abierto} unmountOnExit timeout={250} id="panel-filtros">
         <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           {resto && <Aparecer distancia={20}>{resto}</Aparecer>}
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5, alignItems: 'center', pt: 2 }}>
             {selectores.map(({ etiqueta, campo, opciones }, i) => (
               <Box key={campo} sx={{ flex: { xs: '1 1 calc(50% - 6px)', md: '0 0 170px' }, minWidth: 0 }}>
                 <Aparecer i={i + 1} distancia={20}>

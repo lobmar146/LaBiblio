@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 import {
   Alert, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText,
-  DialogTitle, Grid, Paper, Stack, Typography,
+  DialogTitle, Grid, Stack, Typography,
 } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import EditIcon from '@mui/icons-material/Edit'
@@ -15,14 +15,16 @@ import { useOnomatopeya } from '../context/OnomatopeyaContext'
 import { actualizarComic, borrarComic, obtenerComic } from '../lib/comics'
 import { FORMATOS, nombreCompleto } from '../lib/coleccion'
 import Aparecer from '../components/Aparecer'
+import { Globo, Panel, Recuadro } from '../components/Comic'
 import Portada from '../components/Portada'
+import { COLORES } from '../theme'
 
 function Dato({ etiqueta, valor }) {
   if (valor === null || valor === undefined || valor === '') return null
   return (
-    <Box sx={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: 2, py: 1, borderBottom: 1, borderColor: 'divider' }}>
-      <Typography color="text.secondary">{etiqueta}</Typography>
-      <Typography>{valor}</Typography>
+    <Box sx={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 2, py: 0.75, alignItems: 'center' }}>
+      <Box><Recuadro sx={{ fontSize: '0.75rem' }}>{etiqueta}</Recuadro></Box>
+      <Typography sx={{ fontSize: '1.1rem' }}>{valor}</Typography>
     </Box>
   )
 }
@@ -109,9 +111,9 @@ export default function ComicDetalle() {
       <Grid container spacing={{ xs: 3, md: 5 }}>
         <Grid size={{ xs: 12, sm: 5, md: 4 }}>
           <Aparecer lado="izquierda" distancia={60} escala={0.94}>
-            <Paper variant="outlined" sx={{ overflow: 'hidden', maxWidth: 420, mx: 'auto' }}>
+            <Panel corte={22} grosor={4} sx={{ maxWidth: 420, mx: 'auto' }} contenido={{ overflow: 'hidden' }}>
               <Portada comic={comic} />
-            </Paper>
+            </Panel>
           </Aparecer>
         </Grid>
 
@@ -128,7 +130,7 @@ export default function ComicDetalle() {
               {titulo}
             </Typography>
             {comic.titulo !== titulo && (
-              <Typography variant="h6" component="p" color="text.secondary">{comic.titulo}</Typography>
+              <Box><Recuadro color={COLORES.celeste}>{comic.titulo}</Recuadro></Box>
             )}
 
             <Box>
@@ -139,10 +141,10 @@ export default function ComicDetalle() {
             </Box>
 
             {comic.notas && (
-              <Paper variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="overline" color="text.secondary">Notas</Typography>
-                <Typography sx={{ whiteSpace: 'pre-wrap' }}>{comic.notas}</Typography>
-              </Paper>
+              // Las notas son un globo de diálogo cuya cola apunta a la portada.
+              <Globo cola="izquierda">
+                <Typography sx={{ whiteSpace: 'pre-wrap', fontSize: '1.1rem' }}>{comic.notas}</Typography>
+              </Globo>
             )}
 
             {errorAccion && <Alert severity="error">{errorAccion}</Alert>}

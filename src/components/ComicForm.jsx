@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import {
-  Alert, Autocomplete, Box, Button, FormControlLabel, Grid, MenuItem, Paper, Switch, TextField,
+  Alert, Autocomplete, Box, Button, FormControlLabel, Grid, MenuItem, Switch, TextField,
   ToggleButton, ToggleButtonGroup, Typography,
 } from '@mui/material'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
@@ -11,6 +11,8 @@ import { useOnomatopeya } from '../context/OnomatopeyaContext'
 import { buscarDuplicado, FORMATOS, limpiarDatosComic, nombreCompleto, validarComic, valoresUnicos } from '../lib/coleccion'
 import { TIPOS_ACEPTADOS } from '../lib/imagen'
 import Aparecer from './Aparecer'
+import { COLORES } from '../theme'
+import { Panel, Recuadro } from './Comic'
 import Portada from './Portada'
 
 const VACIO = {
@@ -101,12 +103,11 @@ export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guard
           {/* En el celular la portada es una fila compacta (miniatura + botones) para que los campos
               se vean sin scrollear. Desde sm vuelve a ser una columna con la portada grande. */}
           <Aparecer lado="izquierda" distancia={40}>
-          <Paper
-            variant="outlined"
-            sx={{
-              overflow: 'hidden', maxWidth: { sm: 360 }, mx: 'auto',
-              display: { xs: 'flex', sm: 'block' }, alignItems: 'center', gap: 1.5,
-            }}
+          <Panel
+            corte={16}
+            sombra={COLORES.celeste}
+            sx={{ maxWidth: { sm: 360 }, mx: 'auto' }}
+            contenido={{ overflow: 'hidden', display: { xs: 'flex', sm: 'block' }, alignItems: 'center', gap: 1.5 }}
           >
             <Box sx={{ width: { xs: 72, sm: '100%' }, flexShrink: 0 }}>
               {tienePortada ? (
@@ -132,9 +133,9 @@ export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guard
               )}
             </Box>
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'block', sm: 'none' }, pr: 1 }}>
+              <Recuadro sx={{ display: { xs: 'inline-block', sm: 'none' }, mb: 0.5, fontSize: '0.7rem' }}>
                 {tienePortada ? 'Portada' : 'Sin portada todavía'}
-              </Typography>
+              </Recuadro>
               <Box sx={{ display: 'flex', gap: 0.5, p: { xs: 0, sm: 0.5 }, pr: { xs: 1 } }}>
                 <Button fullWidth size="small" onClick={() => inputArchivo.current?.click()} startIcon={<PhotoCameraIcon />}
                   sx={{ justifyContent: { xs: 'flex-start', sm: 'center' } }}>
@@ -149,13 +150,14 @@ export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guard
             </Box>
             {/* capture no está: en el celular deja elegir entre cámara y galería. */}
             <input ref={inputArchivo} type="file" accept={TIPOS_ACEPTADOS.join(',')} hidden onChange={elegirArchivo} />
-          </Paper>
+          </Panel>
           </Aparecer>
         </Grid>
 
         <Grid size={{ xs: 12, sm: 7, md: 8 }}>
           <Aparecer i={2} distancia={30}>
-          <Grid container spacing={2}>
+          <Panel corte={20} sombra={COLORES.magenta} contenido={{ p: { xs: 2, sm: 3 } }}>
+          <Grid container spacing={2.5}>
             <Grid size={{ xs: 12, md: 8 }}>
               <CampoSugerido etiqueta="Serie" valor={valores.serie} onChange={set('serie')} opciones={series} />
             </Grid>
@@ -236,6 +238,7 @@ export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guard
               </Button>
             </Grid>
           </Grid>
+          </Panel>
           </Aparecer>
         </Grid>
       </Grid>

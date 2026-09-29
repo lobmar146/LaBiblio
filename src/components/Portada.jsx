@@ -34,7 +34,7 @@ export default function Portada({ comic, src, sx, ...props }) {
             p: 2,
             textAlign: 'center',
             // Trama de puntos tipo Ben-Day.
-            backgroundImage: `radial-gradient(${COLORES.naranja}40 1.5px, transparent 1.5px)`,
+            backgroundImage: `radial-gradient(${COLORES.magenta}66 1.5px, transparent 1.5px)`,
             backgroundSize: '10px 10px',
           }}
         >

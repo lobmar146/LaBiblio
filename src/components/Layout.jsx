@@ -4,6 +4,8 @@ import AddIcon from '@mui/icons-material/Add'
 import LoginIcon from '@mui/icons-material/Login'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useAuth } from '../context/AuthContext'
+import { COLORES } from '../theme'
+import { Recuadro } from './Comic'
 import Logo from './Logo'
 
 export default function Layout() {
@@ -18,11 +20,12 @@ export default function Layout() {
   return (
     <Box sx={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
       <AppBar position="sticky" color="transparent" elevation={0}
-        sx={{ backdropFilter: 'blur(10px)', bgcolor: 'rgba(11,10,15,0.9)', borderBottom: '3px solid', borderColor: 'primary.main' }}>
+        // Cabecera de revista: banda de tinta con un filete magenta y otro celeste debajo.
+        sx={{ bgcolor: COLORES.tinta, borderBottom: `4px solid ${COLORES.magenta}`, boxShadow: `0 4px 0 ${COLORES.celeste}` }}>
         <Toolbar sx={{ gap: 1 }}>
           <Box component={RouterLink} to="/" sx={{ display: 'flex', alignItems: 'center', gap: 1.25, color: 'inherit', textDecoration: 'none', mr: 'auto' }}>
             <Logo size={34} />
-            <Typography variant="h4" component="span" sx={{ fontSize: { xs: 28, sm: 32 }, lineHeight: 1, textShadow: '2px 2px 0 rgba(255, 138, 31, 0.55)' }}>
+            <Typography variant="h4" component="span" sx={{ fontSize: { xs: 30, sm: 36 }, lineHeight: 1, transform: 'rotate(-2deg)' }}>
               La Biblio
             </Typography>
           </Box>
@@ -54,8 +57,8 @@ export default function Layout() {
         <Outlet />
       </Container>
 
-      <Box component="footer" sx={{ py: 3, textAlign: 'center', color: 'text.secondary', fontSize: 14 }}>
-        La Biblio · hecho con React y Supabase
+      <Box component="footer" sx={{ py: 4, textAlign: 'center' }}>
+        <Recuadro inclinar={-1} sx={{ fontSize: '0.75rem' }}>La Biblio · hecho con React y Supabase</Recuadro>
       </Box>
     </Box>
   )

@@ -9,6 +9,7 @@ import {
   agruparPorSerie, estadisticas, FILTROS_INICIALES, filtrarComics, ordenarComics, valoresUnicos,
 } from '../lib/coleccion'
 import Aparecer from '../components/Aparecer'
+import { Grito, Recuadro } from '../components/Comic'
 import Estadisticas, { ResumenLeidos } from '../components/Estadisticas'
 import Filtros from '../components/Filtros'
 import GrillaComics from '../components/GrillaComics'
@@ -80,8 +81,10 @@ export default function Coleccion() {
     return (
       <Aparecer>
         <Stack spacing={2} sx={{ alignItems: 'center', textAlign: 'center', py: 10 }}>
-          <Typography variant="h2" sx={{ fontSize: { xs: 44, sm: 64 } }}>La biblioteca está vacía</Typography>
-          <Typography color="text.secondary">Todavía no hay comics cargados.</Typography>
+          <Grito>
+            <Typography variant="h2" component="p" sx={{ fontSize: { xs: 38, sm: 60 }, color: 'inherit', WebkitTextStroke: 0, textShadow: 'none' }}>¡La biblioteca está vacía!</Typography>
+            <Typography sx={{ fontSize: '1rem', mt: 0.5 }}>Todavía no hay comics cargados.</Typography>
+          </Grito>
           {esAdmin && (
             <Button component={RouterLink} to="/nuevo" variant="contained" size="large">
               Cargar el primero
@@ -103,11 +106,11 @@ export default function Coleccion() {
 
       <Aparecer i={2}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-        <Typography color="text.secondary" aria-live="polite">
+        <Recuadro aria-live="polite">
           {resultado.length === comics.length
             ? `${comics.length} comics`
             : `${resultado.length} de ${comics.length} comics`}
-        </Typography>
+        </Recuadro>
         <ToggleButtonGroup exclusive size="small" value={vista} onChange={(_e, v) => v && setVista(v)} aria-label="Vista">
           <ToggleButton value="grilla" aria-label="Ver portadas"><GridViewIcon fontSize="small" /></ToggleButton>
           <ToggleButton value="series" aria-label="Ver por serie"><ViewListIcon fontSize="small" /></ToggleButton>
@@ -117,9 +120,11 @@ export default function Coleccion() {
 
       {resultado.length === 0 ? (
         <Aparecer>
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <Typography variant="h4" component="p">¡No lo tenés!</Typography>
-            <Typography color="text.secondary" sx={{ mt: 1 }}>Ningún comic coincide con la búsqueda.</Typography>
+          <Box sx={{ textAlign: 'center', py: 5 }}>
+            <Grito color="#38d0ff">
+              <Typography variant="h3" component="p" sx={{ fontSize: { xs: 36, sm: 54 }, color: 'inherit', WebkitTextStroke: 0, textShadow: 'none' }}>¡No lo tenés!</Typography>
+              <Typography sx={{ fontSize: '1rem', mt: 0.5 }}>Ningún comic coincide con la búsqueda.</Typography>
+            </Grito>
           </Box>
         </Aparecer>
       ) : vista === 'series' ? (

@@ -48,9 +48,19 @@ npm run dev            # http://localhost:5174
 
 1. Subí el repo a GitHub e importalo en [vercel.com](https://vercel.com). Detecta Vite solo.
 2. En **Settings → Environment Variables** cargá `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY`.
-3. Deploy. `vercel.json` ya redirige todas las rutas a `index.html`.
+3. Deploy. `vercel.json` manda `/` y `/comic/:id` a `api/meta.js` y el resto de las rutas a `index.html`.
 
 > El plan gratis de Supabase pausa el proyecto después de 7 días sin uso. Se reactiva desde el dashboard con un clic.
+
+### Vista previa al compartir el enlace
+
+WhatsApp, Telegram, X y Facebook arman la miniatura leyendo las etiquetas Open Graph del HTML y no ejecutan JavaScript, así que una SPA les muestra siempre lo mismo. Dos funciones de Vercel lo resuelven:
+
+- `api/meta.js` responde el `index.html` con las etiquetas cambiadas: en `/comic/:id`, el título, los datos y la portada de ese comic; en `/`, el banner del sitio.
+- `api/og.js` arma la imagen de un comic (1200x630, JPEG): la portada con marco y sombra sobre su propio fondo desenfocado. Usa `sharp` y no lleva texto, porque el servidor no tiene fuentes.
+- `public/og-biblio.jpg` es el banner del sitio. Se regenera con `node scripts/generar-og.mjs` (toma las últimas portadas de la base) y se commitea.
+
+Las funciones leen las mismas variables `VITE_SUPABASE_*` que ya están cargadas en Vercel. WhatsApp guarda las vistas previas en caché: para ver una nueva de un enlace ya compartido, agregale algo al final (`?v=2`) o probalo en el [depurador de Facebook](https://developers.facebook.com/tools/debug/).
 
 ## Scripts
 

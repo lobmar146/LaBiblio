@@ -46,7 +46,7 @@ npm run dev            # http://localhost:5174
 ### 3. Vercel
 
 1. Subí el repo a GitHub e importalo en [vercel.com](https://vercel.com). Detecta Vite solo.
-2. En **Settings → Environment Variables** cargá `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
+2. En **Settings → Environment Variables** cargá `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY`.
 3. Deploy. `vercel.json` ya redirige todas las rutas a `index.html`.
 
 > El plan gratis de Supabase pausa el proyecto después de 7 días sin uso. Se reactiva desde el dashboard con un clic.

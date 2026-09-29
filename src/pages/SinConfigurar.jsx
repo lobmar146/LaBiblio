@@ -10,7 +10,7 @@ export default function SinConfigurar() {
         <Typography variant="h3" component="h1" sx={{ mt: 1 }}>Falta conectar Supabase</Typography>
         <Typography sx={{ mt: 1.5 }}>
           Copiá <code>.env.example</code> a <code>.env</code> y completá <code>VITE_SUPABASE_URL</code> y{' '}
-          <code>VITE_SUPABASE_ANON_KEY</code> con los datos de tu proyecto (Project Settings → API).
+          <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> con los datos de tu proyecto (Project Settings → API).
           Después reiniciá <code>npm run dev</code>.
         </Typography>
         <Typography color="text.secondary" sx={{ mt: 1.5 }}>

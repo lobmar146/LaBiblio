@@ -66,16 +66,20 @@ export const theme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
+        // El color liso va también en <html>: si el body es más corto que la ventana no queda blanco.
+        html: { backgroundColor: fondo },
         body: {
-          // Tres capas: puntos magenta, puntos celestes corridos (trama de imprenta) y rayos de velocidad.
+          // Trama tenue: puntos magenta, puntos celestes corridos (imprenta) y rayos de velocidad solo
+          // arriba de la página. Va suave a propósito: los textos de lectura viven sobre superficies
+          // sólidas (paneles, globos, rótulos) y el peor contraste posible sobre el fondo es 10:1.
           backgroundImage: [
-            `radial-gradient(${alpha(magenta, 0.17)} 1.7px, transparent 2px)`,
-            `radial-gradient(${alpha(celeste, 0.12)} 1.4px, transparent 1.7px)`,
-            `repeating-conic-gradient(from 0deg at 50% -8%, ${alpha('#ffffff', 0.04)} 0deg 1.6deg, transparent 1.6deg 7deg)`,
+            `radial-gradient(${alpha(magenta, 0.11)} 1.6px, transparent 1.9px)`,
+            `radial-gradient(${alpha(celeste, 0.08)} 1.3px, transparent 1.6px)`,
+            `repeating-conic-gradient(from 0deg at 50% -8%, ${alpha('#ffffff', 0.03)} 0deg 1.6deg, transparent 1.6deg 7deg)`,
           ].join(', '),
-          backgroundSize: '12px 12px, 12px 12px, 100% 100%',
+          backgroundSize: '12px 12px, 12px 12px, 100% 100vh',
           backgroundPosition: '0 0, 6px 6px, 0 0',
-          backgroundAttachment: 'fixed',
+          backgroundRepeat: 'repeat, repeat, no-repeat',
         },
         '::selection': { background: sol, color: tinta },
       },
@@ -100,6 +104,10 @@ export const theme = createTheme({
         },
         outlined: { borderWidth: 3, borderColor: crema, color: crema, '&:hover': { borderWidth: 3, backgroundColor: alpha(crema, 0.12) } },
       },
+      variants: [
+        // Contraste: el magenta sobre el violeta da ~4,9:1; el amarillo sol pasa de 13:1.
+        { props: { variant: 'text', color: 'primary' }, style: { color: sol, '&:hover': { backgroundColor: alpha(sol, 0.14) } } },
+      ],
     },
     // Los campos son globos de diálogo: papel, contorno grueso y sombra dura.
     MuiOutlinedInput: {
@@ -143,7 +151,10 @@ export const theme = createTheme({
     },
     MuiTooltip: { styleOverrides: { tooltip: { ...globo, boxShadow: sombraDura(), fontFamily: LETRAS, fontWeight: 700, fontSize: '0.8rem' }, arrow: { color: tinta } } },
     MuiChip: {
-      styleOverrides: { root: { borderRadius: 4, border: `2px solid ${tinta}`, fontFamily: LETRAS_TITULO, fontWeight: 400, letterSpacing: '0.05em', fontSize: '0.95rem' } },
+      styleOverrides: {
+        root: { borderRadius: 4, border: `2px solid ${tinta}`, fontFamily: LETRAS_TITULO, fontWeight: 400, letterSpacing: '0.05em', fontSize: '0.95rem' },
+        outlined: { borderColor: crema, color: crema, backgroundColor: alpha(crema, 0.1) },
+      },
     },
     MuiToggleButton: {
       styleOverrides: {

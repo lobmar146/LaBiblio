@@ -133,12 +133,13 @@ export default function ComicDetalle() {
               <Box><Recuadro color={COLORES.celeste}>{comic.titulo}</Recuadro></Box>
             )}
 
-            <Box>
+            {/* Texto de lectura sobre superficie sólida, no sobre la trama del fondo. */}
+            <Panel corte={14} sombra={COLORES.celeste} contenido={{ px: 2, py: 1 }}>
               <Dato etiqueta="Editorial" valor={comic.editorial} />
               <Dato etiqueta="Año" valor={comic.anio} />
               <Dato etiqueta="Guion" valor={comic.guion} />
               <Dato etiqueta="Dibujo" valor={comic.dibujo} />
-            </Box>
+            </Panel>
 
             {comic.notas && (
               // Las notas son un globo de diálogo cuya cola apunta a la portada.

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { Stack, Typography } from '@mui/material'
 import { useComics } from '../context/ComicsContext'
 import { crearComic } from '../lib/comics'
+import Aparecer from '../components/Aparecer'
 import ComicForm from '../components/ComicForm'
 
 export default function NuevoComic() {
@@ -16,7 +17,9 @@ export default function NuevoComic() {
 
   return (
     <Stack spacing={{ xs: 2, sm: 3 }}>
-      <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 32, sm: 52 } }}>Agregar comic</Typography>
+      <Aparecer lado="izquierda" distancia={40}>
+        <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 32, sm: 52 } }}>Agregar comic</Typography>
+      </Aparecer>
       <ComicForm onGuardar={guardar} textoBoton="Agregar a la biblio" />
     </Stack>
   )

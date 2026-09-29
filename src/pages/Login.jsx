@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Alert, Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
 import { useAuth } from '../context/AuthContext'
+import Aparecer from '../components/Aparecer'
 import Logo from '../components/Logo'
 
 export default function Login() {
@@ -29,7 +30,8 @@ export default function Login() {
   }
 
   return (
-    <Box sx={{ display: 'grid', placeItems: 'center', py: { xs: 4, sm: 8 } }}>
+    <Box sx={{ display: 'grid', justifyContent: 'center', gridTemplateColumns: 'min(100%, 400px)', py: { xs: 4, sm: 8 } }}>
+      <Aparecer escala={0.92} distancia={30}>
       <Paper variant="outlined" sx={{ p: { xs: 3, sm: 4 }, width: '100%', maxWidth: 400 }}>
         <Stack component="form" spacing={2.5} onSubmit={enviar}>
           <Box sx={{ textAlign: 'center' }}>
@@ -45,6 +47,7 @@ export default function Login() {
           <Button type="submit" variant="contained" size="large" loading={enviando}>Entrar</Button>
         </Stack>
       </Paper>
+      </Aparecer>
     </Box>
   )
 }

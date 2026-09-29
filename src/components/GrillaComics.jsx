@@ -67,6 +67,7 @@ export default function GrillaComics({ comics, etiquetaPrimero }) {
                 rows={grande ? 2 : 1}
                 grande={grande}
                 etiqueta={i === 0 ? etiquetaPrimero : null}
+                orden={i % 12}
               />
             )
           })}

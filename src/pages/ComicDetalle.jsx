@@ -14,6 +14,7 @@ import { useComics } from '../context/ComicsContext'
 import { useOnomatopeya } from '../context/OnomatopeyaContext'
 import { actualizarComic, borrarComic, obtenerComic } from '../lib/comics'
 import { FORMATOS, nombreCompleto } from '../lib/coleccion'
+import Aparecer from '../components/Aparecer'
 import Portada from '../components/Portada'
 
 function Dato({ etiqueta, valor }) {
@@ -99,20 +100,23 @@ export default function ComicDetalle() {
 
   return (
     <Stack spacing={3}>
-      <Box>
+      <Aparecer distancia={16}>
         <Button startIcon={<ArrowBackIcon />} onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}>
           Volver
         </Button>
-      </Box>
+      </Aparecer>
 
       <Grid container spacing={{ xs: 3, md: 5 }}>
         <Grid size={{ xs: 12, sm: 5, md: 4 }}>
-          <Paper variant="outlined" sx={{ overflow: 'hidden', maxWidth: 420, mx: 'auto' }}>
-            <Portada comic={comic} />
-          </Paper>
+          <Aparecer lado="izquierda" distancia={60} escala={0.94}>
+            <Paper variant="outlined" sx={{ overflow: 'hidden', maxWidth: 420, mx: 'auto' }}>
+              <Portada comic={comic} />
+            </Paper>
+          </Aparecer>
         </Grid>
 
         <Grid size={{ xs: 12, sm: 7, md: 8 }}>
+          <Aparecer lado="derecha" distancia={60} i={2}>
           <Stack spacing={2}>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Chip label={comic.estado === 'tengo' ? 'Lo tengo' : 'Lo quiero'} color={comic.estado === 'tengo' ? 'primary' : 'secondary'} />
@@ -158,6 +162,7 @@ export default function ComicDetalle() {
               </Box>
             )}
           </Stack>
+          </Aparecer>
         </Grid>
       </Grid>
 

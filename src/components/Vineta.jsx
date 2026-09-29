@@ -4,6 +4,7 @@ import { Box, ImageListItem, ImageListItemBar } from '@mui/material'
 import { useOnomatopeya } from '../context/OnomatopeyaContext'
 import { FORMATOS, nombreCompleto } from '../lib/coleccion'
 import { COLORES } from '../theme'
+import Aparecer from './Aparecer'
 import Portada from './Portada'
 
 const TINTA = '#0c0b10'
@@ -15,7 +16,7 @@ const bangers = { fontFamily: '"Bangers", Impact, sans-serif', letterSpacing: '0
 // Una viñeta de la página: portada con borde de tinta, globo si es de la lista de deseos,
 // sello si está leído y caja de narración opcional arriba.
 // ImageList le pasa por props el tamaño de la grilla (style); hay que reenviarlo a ImageListItem.
-function Vineta({ comic, grande, etiqueta, ...propsDeGrilla }) {
+function Vineta({ comic, grande, etiqueta, orden = 0, ...propsDeGrilla }) {
   const explotar = useOnomatopeya()
   const quiero = comic.estado === 'quiero'
   const subtitulo = [comic.editorial, comic.anio, FORMATOS[comic.formato]].filter(Boolean).join(' · ')
@@ -35,6 +36,8 @@ function Vineta({ comic, grande, etiqueta, ...propsDeGrilla }) {
         },
       }}
     >
+      {/* El marco de la viñeta está desde el principio y la portada lo llena con la animación. */}
+      <Aparecer llenar i={orden} distancia={28} escala={0.92}>
       <Box
         component={RouterLink}
         to={`/comic/${comic.id}`}
@@ -96,6 +99,7 @@ function Vineta({ comic, grande, etiqueta, ...propsDeGrilla }) {
           }}
         />
       </Box>
+      </Aparecer>
     </ImageListItem>
   )
 }

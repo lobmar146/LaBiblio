@@ -10,6 +10,7 @@ import { useComics } from '../context/ComicsContext'
 import { useOnomatopeya } from '../context/OnomatopeyaContext'
 import { buscarDuplicado, FORMATOS, limpiarDatosComic, nombreCompleto, validarComic, valoresUnicos } from '../lib/coleccion'
 import { TIPOS_ACEPTADOS } from '../lib/imagen'
+import Aparecer from './Aparecer'
 import Portada from './Portada'
 
 const VACIO = {
@@ -99,6 +100,7 @@ export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guard
         <Grid size={{ xs: 12, sm: 5, md: 4 }}>
           {/* En el celular la portada es una fila compacta (miniatura + botones) para que los campos
               se vean sin scrollear. Desde sm vuelve a ser una columna con la portada grande. */}
+          <Aparecer lado="izquierda" distancia={40}>
           <Paper
             variant="outlined"
             sx={{
@@ -148,9 +150,11 @@ export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guard
             {/* capture no está: en el celular deja elegir entre cámara y galería. */}
             <input ref={inputArchivo} type="file" accept={TIPOS_ACEPTADOS.join(',')} hidden onChange={elegirArchivo} />
           </Paper>
+          </Aparecer>
         </Grid>
 
         <Grid size={{ xs: 12, sm: 7, md: 8 }}>
+          <Aparecer i={2} distancia={30}>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 8 }}>
               <CampoSugerido etiqueta="Serie" valor={valores.serie} onChange={set('serie')} opciones={series} />
@@ -232,6 +236,7 @@ export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guard
               </Button>
             </Grid>
           </Grid>
+          </Aparecer>
         </Grid>
       </Grid>
     </Box>

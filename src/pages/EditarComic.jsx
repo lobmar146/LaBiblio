@@ -3,6 +3,7 @@ import { Alert, Box, CircularProgress, Stack, Typography } from '@mui/material'
 import { useComics } from '../context/ComicsContext'
 import { actualizarComic } from '../lib/comics'
 import { nombreCompleto } from '../lib/coleccion'
+import Aparecer from '../components/Aparecer'
 import ComicForm from '../components/ComicForm'
 
 export default function EditarComic() {
@@ -26,9 +27,11 @@ export default function EditarComic() {
 
   return (
     <Stack spacing={{ xs: 2, sm: 3 }}>
-      <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 32, sm: 52 } }}>
-        Editar {nombreCompleto(comic)}
-      </Typography>
+      <Aparecer lado="izquierda" distancia={40}>
+        <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 32, sm: 52 } }}>
+          Editar {nombreCompleto(comic)}
+        </Typography>
+      </Aparecer>
       {/* key: si cambia el comic, el formulario arranca de cero con sus datos. */}
       <ComicForm key={comic.id} comic={comic} onGuardar={guardar} />
     </Stack>

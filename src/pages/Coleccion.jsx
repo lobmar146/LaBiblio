@@ -8,7 +8,8 @@ import { useComics } from '../context/ComicsContext'
 import {
   agruparPorSerie, estadisticas, FILTROS_INICIALES, filtrarComics, ordenarComics, valoresUnicos,
 } from '../lib/coleccion'
-import Estadisticas from '../components/Estadisticas'
+import Aparecer from '../components/Aparecer'
+import Estadisticas, { ResumenLeidos } from '../components/Estadisticas'
 import Filtros from '../components/Filtros'
 import GrillaComics from '../components/GrillaComics'
 import VistaSeries from '../components/VistaSeries'
@@ -77,23 +78,30 @@ export default function Coleccion() {
 
   if (comics.length === 0) {
     return (
-      <Stack spacing={2} sx={{ alignItems: 'center', textAlign: 'center', py: 10 }}>
-        <Typography variant="h2" sx={{ fontSize: { xs: 44, sm: 64 } }}>La biblioteca está vacía</Typography>
-        <Typography color="text.secondary">Todavía no hay comics cargados.</Typography>
-        {esAdmin && (
-          <Button component={RouterLink} to="/nuevo" variant="contained" size="large">
-            Cargar el primero
-          </Button>
-        )}
-      </Stack>
+      <Aparecer>
+        <Stack spacing={2} sx={{ alignItems: 'center', textAlign: 'center', py: 10 }}>
+          <Typography variant="h2" sx={{ fontSize: { xs: 44, sm: 64 } }}>La biblioteca está vacía</Typography>
+          <Typography color="text.secondary">Todavía no hay comics cargados.</Typography>
+          {esAdmin && (
+            <Button component={RouterLink} to="/nuevo" variant="contained" size="large">
+              Cargar el primero
+            </Button>
+          )}
+        </Stack>
+      </Aparecer>
     )
   }
 
   return (
     <Stack spacing={3}>
-      <Estadisticas datos={stats} />
-      <Filtros filtros={filtros} onChange={setFiltros} editoriales={editoriales} />
+      <Aparecer>
+        <ResumenLeidos datos={stats} />
+      </Aparecer>
+      <Aparecer i={1}>
+        <Filtros filtros={filtros} onChange={setFiltros} editoriales={editoriales} resto={<Estadisticas datos={stats} />} />
+      </Aparecer>
 
+      <Aparecer i={2}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
         <Typography color="text.secondary" aria-live="polite">
           {resultado.length === comics.length
@@ -105,12 +113,15 @@ export default function Coleccion() {
           <ToggleButton value="series" aria-label="Ver por serie"><ViewListIcon fontSize="small" /></ToggleButton>
         </ToggleButtonGroup>
       </Box>
+      </Aparecer>
 
       {resultado.length === 0 ? (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography variant="h4" component="p">¡No lo tenés!</Typography>
-          <Typography color="text.secondary" sx={{ mt: 1 }}>Ningún comic coincide con la búsqueda.</Typography>
-        </Box>
+        <Aparecer>
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h4" component="p">¡No lo tenés!</Typography>
+            <Typography color="text.secondary" sx={{ mt: 1 }}>Ningún comic coincide con la búsqueda.</Typography>
+          </Box>
+        </Aparecer>
       ) : vista === 'series' ? (
         <VistaSeries grupos={grupos} />
       ) : (

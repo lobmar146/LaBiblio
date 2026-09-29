@@ -1,14 +1,16 @@
 import { Link as RouterLink } from 'react-router-dom'
 import { Box, Chip, Paper, Stack, Tooltip, Typography } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
+import Aparecer from './Aparecer'
 import VisorSerie from './VisorSerie'
 
 // Una fila por serie con un chip por número: responde "¿qué me falta de esta serie?" de un vistazo.
 export default function VistaSeries({ grupos }) {
   return (
     <Stack spacing={1.5}>
-      {grupos.map((grupo) => (
-        <Paper key={grupo.serie ?? '__sin_serie'} variant="outlined" sx={{ p: 2, display: 'flex', gap: { xs: 1.5, sm: 2.5 }, alignItems: 'flex-start' }}>
+      {grupos.map((grupo, i) => (
+        <Aparecer key={grupo.serie ?? '__sin_serie'} i={i}>
+        <Paper variant="outlined" sx={{ p: 2, display: 'flex', gap: { xs: 1.5, sm: 2.5 }, alignItems: 'flex-start' }}>
           {/* Los comics sueltos no tienen nada en común: el visor es solo para series. */}
           {grupo.serie && <VisorSerie comics={grupo.comics} />}
           <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -42,6 +44,7 @@ export default function VistaSeries({ grupos }) {
           </Box>
           </Box>
         </Paper>
+        </Aparecer>
       ))}
     </Stack>
   )

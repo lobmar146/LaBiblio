@@ -15,8 +15,8 @@ export default function NuevoComic() {
   }
 
   return (
-    <Stack spacing={3}>
-      <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 40, sm: 52 } }}>Agregar comic</Typography>
+    <Stack spacing={{ xs: 2, sm: 3 }}>
+      <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 32, sm: 52 } }}>Agregar comic</Typography>
       <ComicForm onGuardar={guardar} textoBoton="Agregar a la biblio" />
     </Stack>
   )

@@ -88,36 +88,55 @@ export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guard
 
   return (
     <Box component="form" onSubmit={enviar} noValidate>
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 2, sm: 3 }}>
         <Grid size={{ xs: 12, sm: 5, md: 4 }}>
-          <Paper variant="outlined" sx={{ overflow: 'hidden', maxWidth: 360, mx: 'auto' }}>
-            {tienePortada ? (
-              <Portada comic={comic} src={urlPrevia ?? undefined} />
-            ) : (
-              <Box
-                component="button"
-                type="button"
-                onClick={() => inputArchivo.current?.click()}
-                sx={{
-                  width: '100%', aspectRatio: '2 / 3', border: 0, cursor: 'pointer', color: 'text.secondary',
-                  bgcolor: 'transparent', display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center', gap: 1, font: 'inherit', '&:hover': { color: 'primary.main' },
-                }}
-              >
-                <PhotoCameraIcon sx={{ fontSize: 48 }} />
-                <Typography>Subir portada</Typography>
-                <Typography variant="caption">JPG, PNG o WebP · se achica sola</Typography>
-              </Box>
-            )}
-            <Box sx={{ display: 'flex', gap: 1, p: 1 }}>
-              <Button fullWidth onClick={() => inputArchivo.current?.click()} startIcon={<PhotoCameraIcon />}>
-                {tienePortada ? 'Cambiar' : 'Elegir foto'}
-              </Button>
-              {tienePortada && (
-                <Button color="secondary" onClick={() => setPortada(comic?.portada_path ? null : undefined)} startIcon={<DeleteOutlineIcon />}>
-                  Quitar
-                </Button>
+          {/* En el celular la portada es una fila compacta (miniatura + botones) para que los campos
+              se vean sin scrollear. Desde sm vuelve a ser una columna con la portada grande. */}
+          <Paper
+            variant="outlined"
+            sx={{
+              overflow: 'hidden', maxWidth: { sm: 360 }, mx: 'auto',
+              display: { xs: 'flex', sm: 'block' }, alignItems: 'center', gap: 1.5,
+            }}
+          >
+            <Box sx={{ width: { xs: 72, sm: '100%' }, flexShrink: 0 }}>
+              {tienePortada ? (
+                <Portada comic={comic} src={urlPrevia ?? undefined} />
+              ) : (
+                <Box
+                  component="button"
+                  type="button"
+                  aria-label="Subir portada"
+                  onClick={() => inputArchivo.current?.click()}
+                  sx={{
+                    width: '100%', aspectRatio: '2 / 3', border: 0, cursor: 'pointer', color: 'text.secondary',
+                    bgcolor: 'transparent', display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    justifyContent: 'center', gap: 1, font: 'inherit', '&:hover': { color: 'primary.main' },
+                  }}
+                >
+                  <PhotoCameraIcon sx={{ fontSize: { xs: 28, sm: 48 } }} />
+                  <Typography sx={{ display: { xs: 'none', sm: 'block' } }}>Subir portada</Typography>
+                  <Typography variant="caption" sx={{ px: 1, display: { xs: 'none', sm: 'block' } }}>
+                    JPG, PNG o WebP · se achica sola
+                  </Typography>
+                </Box>
               )}
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'block', sm: 'none' }, pr: 1 }}>
+                {tienePortada ? 'Portada' : 'Sin portada todavía'}
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 0.5, p: { xs: 0, sm: 0.5 }, pr: { xs: 1 } }}>
+                <Button fullWidth size="small" onClick={() => inputArchivo.current?.click()} startIcon={<PhotoCameraIcon />}
+                  sx={{ justifyContent: { xs: 'flex-start', sm: 'center' } }}>
+                  {tienePortada ? 'Cambiar' : 'Elegir foto'}
+                </Button>
+                {tienePortada && (
+                  <Button size="small" color="secondary" onClick={() => setPortada(comic?.portada_path ? null : undefined)} startIcon={<DeleteOutlineIcon />}>
+                    Quitar
+                  </Button>
+                )}
+              </Box>
             </Box>
             {/* capture no está: en el celular deja elegir entre cámara y galería. */}
             <input ref={inputArchivo} type="file" accept={TIPOS_ACEPTADOS.join(',')} hidden onChange={elegirArchivo} />

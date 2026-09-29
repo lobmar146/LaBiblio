@@ -25,8 +25,8 @@ export default function EditarComic() {
   }
 
   return (
-    <Stack spacing={3}>
-      <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 40, sm: 52 } }}>
+    <Stack spacing={{ xs: 2, sm: 3 }}>
+      <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 32, sm: 52 } }}>
         Editar {nombreCompleto(comic)}
       </Typography>
       {/* key: si cambia el comic, el formulario arranca de cero con sus datos. */}

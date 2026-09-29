@@ -7,14 +7,39 @@ import { COLORES } from '../theme'
 import Portada from './Portada'
 
 // La portada se "dibuja" al entrar al detalle, como la mano del dibujante en Comix Zone:
-//   1. un lápiz en diagonal recorre la hoja en zigzag y va dejando el boceto (la misma portada
-//      convertida en líneas con un filtro SVG de detección de bordes),
-//   2. después la tinta y el color la barren de izquierda a derecha.
+//   1. un lápiz en diagonal recorre la hoja de la esquina superior izquierda a la inferior derecha,
+//      yendo y viniendo a lo largo del frente, y va dejando el boceto (la misma portada convertida
+//      en líneas con un filtro SVG de detección de bordes),
+//   2. después la tinta y el color la barren igual, de esquina a esquina.
 // Con "reducir movimiento", sin portada o si algo falla, se muestra la portada normal.
 const ID_FILTRO = 'boceto-a-lapiz'
 const PAPEL = '#f3e9cf'
 const INCLINACION = -56 // grados: punta abajo a la izquierda, cuerpo hacia arriba a la derecha
 const VAIVEN = 7
+
+// Tiempos (s): boceto, vuelta del lápiz y barrido de color. PASADAS: idas y vueltas del lápiz.
+const TB = 1.9
+const TV = 0.35
+const TC = 1.05
+const TOTAL = TB + TV + TC
+const PASADAS = 5
+
+// Frente diagonal: la recta x + y = c (con x e y en fracciones del ancho y el alto) recorre la
+// portada de la esquina superior izquierda (c = 0) a la inferior derecha (c = 2). Sus extremos:
+//   a = arriba/derecha, b = abajo/izquierda. Sirve de recorte (todo lo que queda "antes" del frente)
+//   y para ubicar el lápiz sobre él (u = 0 en a, u = 1 en b).
+const extremos = (c) => ({
+  a: [Math.min(c, 1), Math.max(c - 1, 0)],
+  b: [Math.max(c - 1, 0), Math.min(c, 1)],
+})
+const poligono = (c) => {
+  const { a, b } = extremos(c)
+  return `polygon(0% 0%, ${a[0] * 100}% 0%, ${a[0] * 100}% ${a[1] * 100}%, ${b[0] * 100}% ${b[1] * 100}%, 0% ${b[1] * 100}%)`
+}
+const sobreFrente = (c, u) => {
+  const { a, b } = extremos(c)
+  return [a[0] + u * (b[0] - a[0]), a[1] + u * (b[1] - a[1])]
+}
 
 // Bordes de la imagen: pasa a grises, marca los contornos (Laplaciano), los invierte para que las
 // líneas queden oscuras sobre blanco y los engrosa un poco, como trazo de lápiz.
@@ -83,42 +108,55 @@ function Dibujando({ url, comic }) {
 
   useEffect(() => {
     if (!cargada) return
-    const contexto = gsap.context(() => {
-      const $ = (sel) => raiz.current.querySelector(sel)
-      const boceto = $('[data-capa="boceto"]')
-      const color = $('[data-capa="color"]')
-      const lapiz = lapizRef.current
-      const giro = giroRef.current
+    const boceto = raiz.current.querySelector('[data-capa="boceto"]')
+    const color = raiz.current.querySelector('[data-capa="color"]')
+    const lapiz = lapizRef.current
+    const giro = giroRef.current
+    const suave = gsap.parseEase('power2.inOut')
 
-      // El lápiz vive fuera del panel (que recorta lo que se sale) y sigue a la portada:
-      // su posición se calcula en % del rectángulo de la portada en cada cuadro.
-      const p = { x: 6, y: 0 }
-      const colocar = () => {
-        const r = caja.current.getBoundingClientRect()
-        lapiz.style.width = `${Math.max(96, Math.min(r.width * 0.46, 210))}px`
-        lapiz.style.transform = `translate3d(${r.left + (r.width * p.x) / 100}px, ${r.top + (r.height * p.y) / 100}px, 0)`
+    // Todo sale de un solo reloj (t, en segundos): el frente diagonal del boceto, el del color y
+    // la posición del lápiz son funciones de t. Así no hay tramos que se pisen entre sí.
+    //   [0, TB)          boceto: el frente avanza de la esquina superior izquierda a la inferior
+    //                    derecha y el lápiz va y viene a lo largo de él
+    //   [TB, TB+TV)      el lápiz vuelve a la esquina superior izquierda
+    //   [TB+TV, TOTAL)   color: barrido diagonal, otra vez de esquina a esquina
+    const reloj = { t: 0 }
+    const pintar = (t) => {
+      const r = caja.current.getBoundingClientRect()
+      let pos
+      let rotacion = INCLINACION
+      let opacidad = 1
+
+      if (t < TB) {
+        const c = (2 * t) / TB
+        const fase = (PASADAS * t) / TB
+        const u = 0.5 - 0.5 * Math.cos(Math.PI * fase)
+        boceto.style.clipPath = poligono(c)
+        pos = sobreFrente(c, u)
+        rotacion = INCLINACION + VAIVEN * Math.sin(Math.PI * fase * 2)
+      } else if (t < TB + TV) {
+        const e = suave((t - TB) / TV)
+        boceto.style.clipPath = poligono(2)
+        color.style.clipPath = poligono(0)
+        pos = [1 - e, 1 - e]
+      } else {
+        const k = 2 * suave(Math.min((t - TB - TV) / TC, 1))
+        color.style.clipPath = poligono(k)
+        pos = sobreFrente(k, 0.5)
+        opacidad = Math.max(0, Math.min(1, (TOTAL - t) / 0.3))
       }
-      gsap.set(giro, { rotation: INCLINACION, transformOrigin: '0 50%' })
-      gsap.set(lapiz, { opacity: 0 })
 
-      const tl = gsap.timeline({ delay: 0.5, onUpdate: colocar })
+      // El lápiz vive fuera del panel (que recorta lo que se sale) y sigue a la portada.
+      lapiz.style.width = `${Math.max(96, Math.min(r.width * 0.46, 210))}px`
+      lapiz.style.transform = `translate3d(${r.left + r.width * pos[0]}px, ${r.top + r.height * pos[1]}px, 0)`
+      lapiz.style.opacity = String(opacidad)
+      giro.style.transform = `rotate(${rotacion}deg)`
+    }
 
-      // Boceto: el lápiz baja recorriendo la hoja en zigzag (5 pasadas), inclinándose un poco a
-      // cada lado, y deja el dibujo detrás.
-      tl.set(lapiz, { opacity: 1 })
-        .fromTo(boceto, { clipPath: 'inset(0% 0% 100% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.7, ease: 'none' }, 0)
-        .fromTo(p, { y: 0 }, { y: 100, duration: 1.7, ease: 'none' }, 0)
-        .fromTo(p, { x: 6 }, { x: 94, duration: 0.34, ease: 'sine.inOut', repeat: 4, yoyo: true }, 0)
-        .fromTo(giro, { rotation: INCLINACION - VAIVEN }, { rotation: INCLINACION + VAIVEN, duration: 0.17, ease: 'sine.inOut', repeat: 9, yoyo: true }, 0)
-        // Vuelve al borde izquierdo y entinta: barrido de izquierda a derecha con el color.
-        .to(p, { x: 0, y: 50, duration: 0.3, ease: 'power2.inOut' }, '>')
-        .to(giro, { rotation: INCLINACION, duration: 0.3 }, '<')
-        .addLabel('tinta', '>+0.05')
-        .fromTo(color, { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.0, ease: 'power2.inOut' }, 'tinta')
-        .to(p, { x: 100, y: 46, duration: 1.0, ease: 'power2.inOut' }, 'tinta')
-        .to(lapiz, { opacity: 0, duration: 0.3, ease: 'power1.in' }, 'tinta+=1.0')
-    }, raiz)
-    return () => contexto.revert()
+    const animacion = gsap.to(reloj, {
+      t: TOTAL, duration: TOTAL, ease: 'none', delay: 0.5, onUpdate: () => pintar(reloj.t),
+    })
+    return () => animacion.kill()
   }, [cargada])
 
   if (fallo) return <Portada comic={comic} />

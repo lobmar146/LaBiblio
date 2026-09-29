@@ -1,7 +1,8 @@
 import { Box } from '@mui/material'
+import { alpha } from '@mui/material/styles'
 import { COLORES, LETRAS, LETRAS_TITULO } from '../theme'
 
-const { tinta, crema, sol, magenta, papel } = COLORES
+const { tinta, crema, sol, magenta, celeste, lima, papel } = COLORES
 
 // Piezas de "página de cómic" para que los textos vivan dentro de la historieta:
 //   Recuadro  caja de rótulo (las cajas de narración amarillas)
@@ -84,15 +85,56 @@ export function Grito({ children, color = sol, sx }) {
 
 // Viñeta con esquinas cortadas en diagonal (arriba a la izquierda y abajo a la derecha).
 // La sombra va en el contenedor porque `filter` se aplica antes que `clip-path` en el mismo elemento.
-export function Panel({ children, corte = 16, marco = crema, fondo = papel, sombra = magenta, grosor = 3, sx, contenido, ...props }) {
+export function Panel({ children, corte = 16, marco = crema, fondo = papel, sombra = magenta, grosor = 3, sombraTam = 5, llenar = false, sx, contenido, ...props }) {
   const poligono = (c) => `polygon(${c}px 0, 100% 0, 100% calc(100% - ${c}px), calc(100% - ${c}px) 100%, 0 100%, 0 ${c}px)`
+  const alto = llenar ? { height: '100%' } : {}
   return (
-    <Box {...props} sx={{ filter: `drop-shadow(5px 5px 0 ${sombra})`, ...sx }}>
-      <Box sx={{ bgcolor: marco, clipPath: poligono(corte), p: `${grosor}px` }}>
-        <Box sx={{ bgcolor: fondo, clipPath: poligono(Math.max(corte - grosor * 0.6, 2)), ...contenido }}>
+    <Box {...props} sx={{ filter: `drop-shadow(${sombraTam}px ${sombraTam}px 0 ${sombra})`, ...alto, ...sx }}>
+      <Box sx={{ bgcolor: marco, clipPath: poligono(corte), p: `${grosor}px`, boxSizing: 'border-box', ...alto }}>
+        <Box sx={{ bgcolor: fondo, clipPath: poligono(Math.max(corte - grosor * 0.6, 2)), ...alto, ...contenido }}>
           {children}
         </Box>
       </Box>
     </Box>
+  )
+}
+
+const TONOS = { magenta, celeste, sol, lima }
+
+// Una viñeta de la página con un dato: rótulo pegado arriba a la izquierda, el valor en letras de
+// historietista y una trama de puntos del color de la viñeta, solo en el costado derecho para que
+// el texto quede sobre fondo limpio. Va dentro de una grilla (ver ComicDetalle).
+export function Cuadro({ etiqueta, children, tono = 'magenta', corte = 14, sx }) {
+  const color = TONOS[tono] ?? magenta
+  return (
+    <Panel
+      llenar
+      corte={corte}
+      sombra={color}
+      sombraTam={4}
+      sx={sx}
+      contenido={{
+        position: 'relative', overflow: 'hidden', px: 2, pt: 4.5, pb: 1.75, display: 'flex', alignItems: 'flex-end',
+        // Sombreado de tinta más clara hacia un lado, como el color plano de una página impresa.
+        backgroundImage: `linear-gradient(115deg, transparent 45%, ${alpha(color, 0.2)} 100%)`,
+        '&::after': {
+          content: '""', position: 'absolute', top: 0, right: 0, bottom: 0, width: '55%', pointerEvents: 'none',
+          backgroundImage: `radial-gradient(${alpha(color, 0.55)} 1.7px, transparent 2.1px)`, backgroundSize: '9px 9px',
+          maskImage: 'linear-gradient(to left, #000, transparent)', WebkitMaskImage: 'linear-gradient(to left, #000, transparent)',
+        },
+      }}
+    >
+      <Recuadro
+        sx={{
+          position: 'absolute', top: 0, left: `${corte}px`, zIndex: 1, fontSize: '0.75rem', boxShadow: 'none',
+          borderTop: 0, borderLeft: 0,
+        }}
+      >
+        {etiqueta}
+      </Recuadro>
+      <Box sx={{ position: 'relative', zIndex: 1, fontFamily: LETRAS, fontWeight: 700, fontSize: '1.25rem', lineHeight: 1.2, color: crema }}>
+        {children}
+      </Box>
+    </Panel>
   )
 }

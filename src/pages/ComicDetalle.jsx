@@ -15,16 +15,33 @@ import { useOnomatopeya } from '../context/OnomatopeyaContext'
 import { actualizarComic, borrarComic, obtenerComic } from '../lib/comics'
 import { FORMATOS, nombreCompleto } from '../lib/coleccion'
 import Aparecer from '../components/Aparecer'
-import { Globo, Panel, Recuadro } from '../components/Comic'
+import { Cuadro, Globo, Panel, Recuadro } from '../components/Comic'
 import Portada from '../components/Portada'
 import { COLORES } from '../theme'
 
-function Dato({ etiqueta, valor }) {
-  if (valor === null || valor === undefined || valor === '') return null
+// Cuántas columnas (de 6) ocupa cada viñeta según cuántos datos hay: tamaños distintos, como una página.
+const ANCHOS = { 1: [6], 2: [3, 3], 3: [6, 3, 3], 4: [4, 2, 3, 3] }
+const ANCHOS_CELULAR = { 4: [2, 1, 1, 2] } // de 2 columnas; el resto ocupa todo el ancho
+
+function DatosEnVinetas({ comic }) {
+  const datos = [
+    ['Editorial', comic.editorial, 'magenta'],
+    ['Año', comic.anio, 'sol'],
+    ['Guion', comic.guion, 'celeste'],
+    ['Dibujo', comic.dibujo, 'lima'],
+  ].filter(([, valor]) => valor !== null && valor !== undefined && valor !== '')
+  if (datos.length === 0) return null
+
+  const anchos = ANCHOS[datos.length]
+  const anchosCelular = ANCHOS_CELULAR[datos.length]
   return (
-    <Box sx={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 2, py: 0.75, alignItems: 'center' }}>
-      <Box><Recuadro sx={{ fontSize: '0.75rem' }}>{etiqueta}</Recuadro></Box>
-      <Typography sx={{ fontSize: '1.1rem' }}>{valor}</Typography>
+    <Box sx={{ display: 'grid', gap: '14px', gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(6, minmax(0, 1fr))' } }}>
+      {datos.map(([etiqueta, valor, tono], i) => (
+        <Cuadro key={etiqueta} etiqueta={etiqueta} tono={tono}
+          sx={{ gridColumn: { xs: `span ${anchosCelular?.[i] ?? 2}`, sm: `span ${anchos[i]}` } }}>
+          {valor}
+        </Cuadro>
+      ))}
     </Box>
   )
 }
@@ -133,13 +150,7 @@ export default function ComicDetalle() {
               <Box><Recuadro color={COLORES.celeste}>{comic.titulo}</Recuadro></Box>
             )}
 
-            {/* Texto de lectura sobre superficie sólida, no sobre la trama del fondo. */}
-            <Panel corte={14} sombra={COLORES.celeste} contenido={{ px: 2, py: 1 }}>
-              <Dato etiqueta="Editorial" valor={comic.editorial} />
-              <Dato etiqueta="Año" valor={comic.anio} />
-              <Dato etiqueta="Guion" valor={comic.guion} />
-              <Dato etiqueta="Dibujo" valor={comic.dibujo} />
-            </Panel>
+            <DatosEnVinetas comic={comic} />
 
             {comic.notas && (
               // Las notas son un globo de diálogo cuya cola apunta a la portada.

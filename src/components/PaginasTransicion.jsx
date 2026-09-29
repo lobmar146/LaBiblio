@@ -63,10 +63,12 @@ function Cara({ semilla, dorso, portadas, desfase }) {
   return (
     <Box
       sx={{
-        position: 'absolute', inset: 0, bgcolor: crema, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
+        // La hoja es negra: las canaletas entre viñetas quedan en negro. Un filete crema en el borde
+        // deja ver el canto de la hoja sobre el fondo oscuro de la página.
+        position: 'absolute', inset: 0, bgcolor: tinta, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
         transform: dorso ? 'rotateY(180deg)' : 'none',
-        // Sombra del lomo: la hoja se curva un poco hacia el borde izquierdo.
-        boxShadow: dorso ? 'inset -40px 0 50px -40px rgba(13, 6, 32, 0.45)' : 'inset 40px 0 50px -40px rgba(13, 6, 32, 0.45)',
+        // Brillo del lomo: la hoja se curva un poco hacia el borde izquierdo.
+        boxShadow: `inset 0 0 0 3px ${crema}, ${dorso ? 'inset -40px 0 50px -40px rgba(255, 244, 214, 0.28)' : 'inset 40px 0 50px -40px rgba(255, 244, 214, 0.28)'}`,
       }}
     >
       {diseno.map((caja, j) => {

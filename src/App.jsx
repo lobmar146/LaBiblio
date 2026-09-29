@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext'
 import { ComicsProvider } from './context/ComicsContext'
 import { OnomatopeyaProvider } from './context/OnomatopeyaContext'
 import Layout from './components/Layout'
+import RestaurarScroll from './components/RestaurarScroll'
 import RutaAdmin from './components/RutaAdmin'
 import Coleccion from './pages/Coleccion'
 import ComicDetalle from './pages/ComicDetalle'
@@ -16,6 +17,7 @@ export default function App() {
     <AuthProvider>
       <ComicsProvider>
         <OnomatopeyaProvider>
+          <RestaurarScroll />
           <Routes>
             <Route element={<Layout />}>
               <Route index element={<Coleccion />} />

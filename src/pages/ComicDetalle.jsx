@@ -16,7 +16,7 @@ import { actualizarComic, borrarComic, obtenerComic } from '../lib/comics'
 import { FORMATOS, nombreCompleto } from '../lib/coleccion'
 import Aparecer from '../components/Aparecer'
 import { Cuadro, Globo, Panel, Recuadro } from '../components/Comic'
-import Portada from '../components/Portada'
+import PortadaDibujada from '../components/PortadaDibujada'
 import { COLORES } from '../theme'
 
 // Cuántas columnas (de 6) ocupa cada viñeta según cuántos datos hay: tamaños distintos, como una página.
@@ -120,7 +120,7 @@ export default function ComicDetalle() {
   return (
     <Stack spacing={3}>
       <Aparecer distancia={16}>
-        <Button startIcon={<ArrowBackIcon />} onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}>
+        <Button variant="contained" color="secondary" startIcon={<ArrowBackIcon />} onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}>
           Volver
         </Button>
       </Aparecer>
@@ -129,7 +129,7 @@ export default function ComicDetalle() {
         <Grid size={{ xs: 12, sm: 5, md: 4 }}>
           <Aparecer lado="izquierda" distancia={60} escala={0.94}>
             <Panel corte={22} grosor={4} sx={{ maxWidth: 420, mx: 'auto' }} contenido={{ overflow: 'hidden' }}>
-              <Portada comic={comic} />
+              <PortadaDibujada comic={comic} />
             </Panel>
           </Aparecer>
         </Grid>

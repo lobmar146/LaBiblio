@@ -59,6 +59,7 @@ npm run dev            # http://localhost:5174
 | `npm run build` | Build de producción en `dist/` |
 | `npm test` | Tests de la lógica de colección (`node --test`) |
 | `npm run lint` | ESLint |
+| `node scripts/subir-portadas.mjs <carpeta> "<serie>"` | Sube portadas en lote (el número sale del nombre del archivo: `vol-3.jpg`). Pide tu login de admin |
 
 ## Estructura
 

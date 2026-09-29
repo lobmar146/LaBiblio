@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Box, useMediaQuery } from '@mui/material'
 import { gsap } from 'gsap'
+import { useTransicion } from '../context/TransicionContext'
 import { urlPortada } from '../lib/comics'
 import { COLORES } from '../theme'
 import Portada from './Portada'
@@ -93,6 +94,9 @@ function Dibujando({ url, comic }) {
   const giroRef = useRef(null)
   const [cargada, setCargada] = useState(false)
   const [fallo, setFallo] = useState(false)
+  // Si se entra desde la transición de hojas, el dibujo espera a que terminen de revelar la página.
+  const { espera } = useTransicion()
+  const [retraso] = useState(() => espera())
 
   // Se espera a tener la imagen entera: dibujar sobre una imagen a medio bajar se vería cortado.
   useEffect(() => {
@@ -154,10 +158,10 @@ function Dibujando({ url, comic }) {
     }
 
     const animacion = gsap.to(reloj, {
-      t: TOTAL, duration: TOTAL, ease: 'none', delay: 0.5, onUpdate: () => pintar(reloj.t),
+      t: TOTAL, duration: TOTAL, ease: 'none', delay: 0.5 + retraso, onUpdate: () => pintar(reloj.t),
     })
     return () => animacion.kill()
-  }, [cargada])
+  }, [cargada, retraso])
 
   if (fallo) return <Portada comic={comic} />
 

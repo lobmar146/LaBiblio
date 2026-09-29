@@ -1,6 +1,7 @@
 import { Link as RouterLink } from 'react-router-dom'
 import { Box, Chip, Stack, Tooltip, Typography } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
+import { useTransicion } from '../context/TransicionContext'
 import { COLORES } from '../theme'
 import Aparecer from './Aparecer'
 import { Panel, Recuadro } from './Comic'
@@ -8,6 +9,7 @@ import VisorSerie from './VisorSerie'
 
 // Una viñeta por serie con un chip por número: responde "¿qué me falta de esta serie?" de un vistazo.
 export default function VistaSeries({ grupos }) {
+  const { conPaginas } = useTransicion()
   return (
     <Stack spacing={2.5}>
       {grupos.map((grupo, i) => (
@@ -37,6 +39,7 @@ export default function VistaSeries({ grupos }) {
                         component={RouterLink}
                         to={`/comic/${comic.id}`}
                         clickable
+                        onClick={(e) => conPaginas(e, `/comic/${comic.id}`)}
                         label={etiqueta}
                         icon={comic.leido ? <CheckIcon /> : undefined}
                         color={comic.estado === 'quiero' ? 'secondary' : 'primary'}

@@ -2,6 +2,7 @@ import { memo } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { Box, ImageListItem, ImageListItemBar } from '@mui/material'
 import { useOnomatopeya } from '../context/OnomatopeyaContext'
+import { useTransicion } from '../context/TransicionContext'
 import { FORMATOS, nombreCompleto } from '../lib/coleccion'
 import { COLORES } from '../theme'
 import Aparecer from './Aparecer'
@@ -17,6 +18,7 @@ const bangers = { fontFamily: '"Bangers", Impact, sans-serif', letterSpacing: '0
 // ImageList le pasa por props el tamaño de la grilla (style); hay que reenviarlo a ImageListItem.
 function Vineta({ comic, grande, etiqueta, orden = 0, ...propsDeGrilla }) {
   const explotar = useOnomatopeya()
+  const { conPaginas } = useTransicion()
   const quiero = comic.estado === 'quiero'
   const subtitulo = [comic.editorial, comic.anio, FORMATOS[comic.formato]].filter(Boolean).join(' · ')
 
@@ -40,7 +42,10 @@ function Vineta({ comic, grande, etiqueta, orden = 0, ...propsDeGrilla }) {
       <Box
         component={RouterLink}
         to={`/comic/${comic.id}`}
-        onClick={(e) => explotar(e, AL_ABRIR[Math.floor(Math.random() * AL_ABRIR.length)])}
+        onClick={(e) => {
+          explotar(e, AL_ABRIR[Math.floor(Math.random() * AL_ABRIR.length)])
+          conPaginas(e, `/comic/${comic.id}`)
+        }}
         aria-label={nombreCompleto(comic)}
         sx={{ display: 'block', height: '100%', color: 'inherit', '&:focus-visible': { outline: `3px solid ${SOL}`, outlineOffset: -6 } }}
       >

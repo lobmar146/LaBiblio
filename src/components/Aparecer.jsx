@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { useMediaQuery } from '@mui/material'
+import { useTransicion } from '../context/TransicionContext'
 import AnimatedContent from './ReactBits/AnimatedContent'
 import './Aparecer.css'
 
@@ -16,6 +18,10 @@ const ESCALON_MAX_S = 0.5
 export default function Aparecer({ children, i = 0, lado = 'abajo', distancia = 36, escala = 0.97, llenar = false, ...props }) {
   const reducirMovimiento = useMediaQuery('(prefers-reduced-motion: reduce)')
   const clase = llenar ? 'aparecer aparecer--llenar' : 'aparecer'
+  // Si la página aparece mientras las hojas de la transición siguen dándose vuelta, espera a que
+  // se despejen. Se calcula una sola vez: si el retraso cambiara, la animación se reiniciaría.
+  const { espera } = useTransicion()
+  const [retraso] = useState(() => espera())
 
   if (reducirMovimiento) return <div className={clase}>{children}</div>
 
@@ -29,7 +35,7 @@ export default function Aparecer({ children, i = 0, lado = 'abajo', distancia = 
       duration={0.7}
       ease="power3.out"
       threshold={0.05}
-      delay={Math.min(i * ESCALON_S, ESCALON_MAX_S)}
+      delay={Math.min(i * ESCALON_S, ESCALON_MAX_S) + retraso}
       {...props}
     >
       {children}

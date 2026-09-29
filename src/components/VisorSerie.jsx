@@ -1,7 +1,8 @@
 import { Component, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 import { Box, Button } from '@mui/material'
 import { useOnomatopeya } from '../context/OnomatopeyaContext'
+import { useTransicion } from '../context/TransicionContext'
 import { urlPortada } from '../lib/comics'
 import { nombreCompleto } from '../lib/coleccion'
 import { COLORES } from '../theme'
@@ -39,7 +40,7 @@ function useVisible() {
 
 export default function VisorSerie({ comics }) {
   const explotar = useOnomatopeya()
-  const navigate = useNavigate()
+  const { ir, conPaginas } = useTransicion()
   const inicioClic = useRef(null)
   const [refCaja, visible] = useVisible()
   const [indice, setIndice] = useState(0)
@@ -60,7 +61,7 @@ export default function VisorSerie({ comics }) {
   // un clic en las flechas y puntitos no cuentan: el slider ya los maneja.
   const abrirActual = (e) => {
     explotar(e, '¡ZAS!')
-    navigate(`/comic/${actual.id}`)
+    ir(`/comic/${actual.id}`)
   }
   const alBajar = (e) => {
     inicioClic.current = { x: e.clientX, y: e.clientY }
@@ -111,7 +112,10 @@ export default function VisorSerie({ comics }) {
         <Button
           component={RouterLink}
           to={`/comic/${actual.id}`}
-          onClick={(e) => explotar(e, '¡ZAS!')}
+          onClick={(e) => {
+            explotar(e, '¡ZAS!')
+            conPaginas(e, `/comic/${actual.id}`)
+          }}
           size="small"
           fullWidth
           sx={{ mt: 0.75 }}

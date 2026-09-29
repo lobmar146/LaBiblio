@@ -12,6 +12,7 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import { useAuth } from '../context/AuthContext'
 import { useComics } from '../context/ComicsContext'
 import { useOnomatopeya } from '../context/OnomatopeyaContext'
+import { useTransicion } from '../context/TransicionContext'
 import { actualizarComic, borrarComic, obtenerComic } from '../lib/comics'
 import { FORMATOS, nombreCompleto } from '../lib/coleccion'
 import Aparecer from '../components/Aparecer'
@@ -51,6 +52,7 @@ export default function ComicDetalle() {
   const navigate = useNavigate()
   const { esAdmin } = useAuth()
   const explotar = useOnomatopeya()
+  const { volver } = useTransicion()
   const { comics, cargando: cargandoLista, guardarLocal, quitarLocal } = useComics()
   const enLista = comics.find((c) => c.id === id)
 
@@ -120,7 +122,7 @@ export default function ComicDetalle() {
   return (
     <Stack spacing={3}>
       <Aparecer distancia={16}>
-        <Button variant="contained" color="secondary" startIcon={<ArrowBackIcon />} onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}>
+        <Button variant="contained" color="secondary" startIcon={<ArrowBackIcon />} onClick={() => volver(() => (window.history.length > 1 ? navigate(-1) : navigate('/')))}>
           Volver
         </Button>
       </Aparecer>

@@ -41,6 +41,16 @@ const sobreFrente = (c, u) => {
   const { a, b } = extremos(c)
   return [a[0] + u * (b[0] - a[0]), a[1] + u * (b[1] - a[1])]
 }
+// Lo que queda "después" del frente: al borrar, se va lo que el frente ya pasó. Con c = 0 es toda la
+// portada y con c = 2 no queda nada. Siempre tiene 5 puntos (algunos se repiten) para poder animarse.
+const complemento = (c) => {
+  const { a, b } = extremos(c)
+  return `polygon(${a[0] * 100}% ${a[1] * 100}%, 100% ${a[1] * 100}%, 100% 100%, ${b[0] * 100}% 100%, ${b[0] * 100}% ${b[1] * 100}%)`
+}
+
+// Al volver, el lápiz vuelve a aparecer con la goma hacia abajo y borra la portada.
+const T_BORRAR = 0.85
+const PASADAS_BORRAR = 3
 
 // Bordes de la imagen: pasa a grises, marca los contornos (Laplaciano), los invierte para que las
 // líneas queden oscuras sobre blanco y los engrosa un poco, como trazo de lápiz.
@@ -95,8 +105,9 @@ function Dibujando({ url, comic }) {
   const [cargada, setCargada] = useState(false)
   const [fallo, setFallo] = useState(false)
   // Si se entra desde la transición de hojas, el dibujo espera a que terminen de revelar la página.
-  const { espera } = useTransicion()
+  const { espera, registrarBorrador } = useTransicion()
   const [retraso] = useState(() => espera())
+  const animacionRef = useRef(null)
 
   // Se espera a tener la imagen entera: dibujar sobre una imagen a medio bajar se vería cortado.
   useEffect(() => {
@@ -160,8 +171,57 @@ function Dibujando({ url, comic }) {
     const animacion = gsap.to(reloj, {
       t: TOTAL, duration: TOTAL, ease: 'none', delay: 0.5 + retraso, onUpdate: () => pintar(reloj.t),
     })
+    animacionRef.current = animacion
     return () => animacion.kill()
   }, [cargada, retraso])
+
+  // Al tocar "Volver" la transición nos pide que nos borremos antes de dar vuelta las hojas: el
+  // lápiz reaparece con la goma hacia abajo y borra el color y después el boceto, en diagonal y de
+  // esquina a esquina, igual que al dibujar. Devuelve una promesa que se resuelve al terminar.
+  useEffect(() => {
+    if (!cargada) return undefined
+    const borrar = () =>
+      new Promise((resolver) => {
+        const boceto = raiz.current.querySelector('[data-capa="boceto"]')
+        const color = raiz.current.querySelector('[data-capa="color"]')
+        const lapiz = lapizRef.current
+        const giro = giroRef.current
+        const suave = gsap.parseEase('power2.inOut')
+
+        // Si el dibujo todavía estaba en curso se corta y se parte de la portada completa.
+        animacionRef.current?.kill()
+        boceto.style.clipPath = poligono(2)
+        color.style.clipPath = poligono(2)
+        // Lápiz "al revés": la goma (que era el extremo de la derecha) pasa a ser el punto de trazo.
+        lapiz.querySelector('svg').style.transform = 'scaleX(-1)'
+
+        const reloj = { t: 0 }
+        const pintarBorrado = (t) => {
+          const r = caja.current.getBoundingClientRect()
+          const avance = suave(t / T_BORRAR)
+          const c = 2 * avance
+          const fase = (PASADAS_BORRAR * t) / T_BORRAR
+          const u = 0.5 - 0.5 * Math.cos(Math.PI * fase)
+          // El color se va primero y el boceto lo sigue un poco más atrás.
+          color.style.clipPath = complemento(c)
+          boceto.style.clipPath = complemento(Math.max(0, (c - 0.4) * 1.25))
+          const pos = sobreFrente(c, u)
+          lapiz.style.width = `${Math.max(96, Math.min(r.width * 0.46, 210))}px`
+          lapiz.style.transform = `translate3d(${r.left + r.width * pos[0]}px, ${r.top + r.height * pos[1]}px, 0)`
+          lapiz.style.opacity = '1'
+          giro.style.transform = `rotate(${INCLINACION + VAIVEN * Math.sin(Math.PI * fase * 2)}deg)`
+        }
+
+        gsap.to(reloj, {
+          t: T_BORRAR, duration: T_BORRAR, ease: 'none', onUpdate: () => pintarBorrado(reloj.t),
+          onComplete: () => {
+            lapiz.style.opacity = '0'
+            resolver()
+          },
+        })
+      })
+    return registrarBorrador(borrar)
+  }, [cargada, registrarBorrador])
 
   if (fallo) return <Portada comic={comic} />
 

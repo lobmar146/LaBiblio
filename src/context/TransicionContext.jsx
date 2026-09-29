@@ -4,13 +4,21 @@ import { useMediaQuery } from '@mui/material'
 import { gsap } from 'gsap'
 import PaginasTransicion from '../components/PaginasTransicion'
 
-// Al abrir un comic desde la colección, varias hojas de cómic se dan vuelta una tras otra hasta
-// tapar la pantalla; ahí (con todo tapado) cambia la ruta, y las hojas se vuelven a pasar hacia el
-// otro lado revelando la página nueva. Viven arriba del router, como las onomatopeyas.
-const TransicionContext = createContext({ ir: () => {}, conPaginas: () => {}, espera: () => 0 })
+// Cambios de página con hojas de cómic que se dan vuelta en 3D. Viven arriba del router, como las
+// onomatopeyas.
+//   ir(destino)       al abrir un comic: las hojas se pasan hacia adelante (de derecha a izquierda)
+//                     hasta tapar la pantalla; con todo tapado cambia la ruta y se vuelven a pasar
+//                     revelando la página nueva.
+//   volver(navegar)   al volver: primero el lápiz borra la portada (ver PortadaDibujada) y después
+//                     las hojas se pasan hacia atrás (de izquierda a derecha), más rápido.
+const TransicionContext = createContext({
+  ir: () => {}, volver: (navegar) => navegar(), conPaginas: () => {}, espera: () => 0, registrarBorrador: () => () => {},
+})
 
-const CUBRIR = { duration: 0.4, stagger: 0.07, ease: 'power2.inOut' }
-const REVELAR = { duration: 0.5, stagger: 0.07, ease: 'power2.inOut' }
+const TIEMPOS = {
+  adelante: { cubrir: { duration: 0.4, stagger: 0.07, ease: 'power2.inOut' }, revelar: { duration: 0.5, stagger: 0.07, ease: 'power2.inOut' } },
+  atras: { cubrir: { duration: 0.32, stagger: 0.05, ease: 'power2.inOut' }, revelar: { duration: 0.4, stagger: 0.05, ease: 'power2.inOut' } },
+}
 
 export function TransicionProvider({ children }) {
   const navigate = useNavigate()
@@ -18,21 +26,27 @@ export function TransicionProvider({ children }) {
   const raiz = useRef(null)
   const ocupado = useRef(false)
   const terminaEn = useRef(0)
+  // Quién sabe "borrarse" antes de volver (la portada dibujada del detalle): cada uno devuelve una
+  // promesa que se resuelve cuando termina.
+  const borradores = useRef(new Set())
   // Corre las portadas de las hojas después de cada transición para que la próxima no sea igual.
   const [desfase, setDesfase] = useState(0)
 
-  const ir = useCallback(
-    (destino) => {
+  // Las hojas: `navegar` se ejecuta cuando la pantalla ya está tapada. El lomo va a la izquierda al
+  // ir y a la derecha al volver, y las hojas arrancan fuera de la pantalla, del lado del lomo.
+  const correr = useCallback(
+    (navegar, atras) => {
       const el = raiz.current
-      // Sin animación si el usuario pidió menos movimiento o si ya hay una en curso.
-      if (reducirMovimiento || !el || ocupado.current) {
-        navigate(destino)
+      if (!el) {
+        navegar()
         return
       }
       ocupado.current = true
       el.style.display = 'block'
+      el.style.perspectiveOrigin = atras ? '100% 50%' : '0% 50%'
       const paginas = [...el.querySelectorAll('[data-pagina]')]
-      const cerradas = { rotationY: -180 } // rotadas hacia la izquierda: fuera de la pantalla
+      const cerradas = { rotationY: atras ? 180 : -180, transformOrigin: atras ? '100% 50%' : '0% 50%' }
+      const tiempos = atras ? TIEMPOS.atras : TIEMPOS.adelante
       gsap.set(paginas, cerradas)
 
       const tl = gsap.timeline({
@@ -43,13 +57,44 @@ export function TransicionProvider({ children }) {
           setDesfase((d) => d + 13)
         },
       })
-      tl.to(paginas, { rotationY: 0, ...CUBRIR })
-        .call(() => navigate(destino))
-        .to([...paginas].reverse(), { rotationY: -180, ...REVELAR }, '+=0.05')
+      tl.to(paginas, { rotationY: 0, ...tiempos.cubrir })
+        .call(navegar)
+        .to([...paginas].reverse(), { rotationY: cerradas.rotationY, ...tiempos.revelar }, '+=0.05')
       terminaEn.current = performance.now() + tl.duration() * 1000
     },
-    [navigate, reducirMovimiento],
+    [],
   )
+
+  // Sin animación si el usuario pidió menos movimiento o si ya hay una en curso.
+  const ir = useCallback(
+    (destino) => {
+      if (reducirMovimiento || ocupado.current) navigate(destino)
+      else correr(() => navigate(destino), false)
+    },
+    [navigate, reducirMovimiento, correr],
+  )
+
+  const volver = useCallback(
+    async (navegar) => {
+      if (reducirMovimiento || ocupado.current) {
+        navegar()
+        return
+      }
+      ocupado.current = true
+      try {
+        await Promise.all([...borradores.current].map((borrar) => borrar()))
+      } finally {
+        ocupado.current = false
+      }
+      correr(navegar, true)
+    },
+    [reducirMovimiento, correr],
+  )
+
+  const registrarBorrador = useCallback((borrar) => {
+    borradores.current.add(borrar)
+    return () => borradores.current.delete(borrar)
+  }, [])
 
   // Para usar en el onClick de un enlace: respeta ctrl/cmd/shift/clic del medio (abrir en otra pestaña).
   const conPaginas = useCallback(
@@ -65,7 +110,10 @@ export function TransicionProvider({ children }) {
   // las animaciones de entrada de esa página esperan para no pasar debajo de las hojas.
   const espera = useCallback(() => Math.max(0, (terminaEn.current - performance.now()) / 1000 - 0.3), [])
 
-  const valor = useMemo(() => ({ ir, conPaginas, espera }), [ir, conPaginas, espera])
+  const valor = useMemo(
+    () => ({ ir, volver, conPaginas, espera, registrarBorrador }),
+    [ir, volver, conPaginas, espera, registrarBorrador],
+  )
 
   return (
     <TransicionContext.Provider value={valor}>

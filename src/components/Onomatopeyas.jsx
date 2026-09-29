@@ -37,7 +37,7 @@ export default function Onomatopeyas({ explosiones, duracion }) {
               style={{ '--angulo': `${(360 / CHISPAS) * i + giro}deg` }}
               sx={{
                 position: 'absolute', left: 0, top: -2, width: 26, height: 4, borderRadius: 2,
-                transformOrigin: '0 50%', bgcolor: i % 2 ? COLORES.amarillo : COLORES.rojo,
+                transformOrigin: '0 50%', bgcolor: i % 2 ? COLORES.naranja : COLORES.celeste,
                 animation: `${chispa} ${duracion * 0.6}ms ease-out forwards`,
               }}
             />
@@ -51,14 +51,14 @@ export default function Onomatopeyas({ explosiones, duracion }) {
             }}
           >
             <svg viewBox="0 0 100 100" width="150" height="150" style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
-              <polygon points={ESTRELLA} fill={COLORES.amarillo} stroke="#0c0b10" strokeWidth="3" strokeLinejoin="round" />
+              <polygon points={ESTRELLA} fill={COLORES.naranja} stroke={COLORES.tinta} strokeWidth="3" strokeLinejoin="round" />
             </svg>
             <Box
               component="span"
               sx={{
                 position: 'relative', fontFamily: '"Bangers", Impact, sans-serif', letterSpacing: '0.04em',
-                fontSize: palabra.length > 6 ? 26 : 34, lineHeight: 1, color: COLORES.rojo,
-                WebkitTextStroke: '1.5px #0c0b10', textShadow: '2px 2px 0 #0c0b10', whiteSpace: 'nowrap',
+                fontSize: palabra.length > 6 ? 26 : 34, lineHeight: 1, color: COLORES.crema,
+                WebkitTextStroke: `1.5px ${COLORES.tinta}`, textShadow: `2px 2px 0 ${COLORES.tinta}`, whiteSpace: 'nowrap',
               }}
             >
               {palabra}

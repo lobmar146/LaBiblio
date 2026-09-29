@@ -156,7 +156,7 @@ export default function ComicDetalle() {
                   startIcon={comic.leido ? <RadioButtonUncheckedIcon /> : <CheckCircleIcon />}>
                   {comic.leido ? 'Marcar sin leer' : 'Marcar leído'}
                 </Button>
-                <Button color="secondary" startIcon={<DeleteIcon />} onClick={() => setConfirmando(true)} disabled={ocupado}>
+                <Button color="error" startIcon={<DeleteIcon />} onClick={() => setConfirmando(true)} disabled={ocupado}>
                   Borrar
                 </Button>
               </Box>
@@ -173,7 +173,7 @@ export default function ComicDetalle() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setConfirmando(false)} disabled={ocupado}>Cancelar</Button>
-          <Button color="secondary" variant="contained" onClick={borrar} loading={ocupado}>Borrar</Button>
+          <Button color="error" variant="contained" onClick={borrar} loading={ocupado}>Borrar</Button>
         </DialogActions>
       </Dialog>
     </Stack>

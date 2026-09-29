@@ -141,7 +141,7 @@ export default function ComicForm({ comic = null, onGuardar, textoBoton = 'Guard
                   {tienePortada ? 'Cambiar' : 'Elegir foto'}
                 </Button>
                 {tienePortada && (
-                  <Button size="small" color="secondary" onClick={() => setPortada(comic?.portada_path ? null : undefined)} startIcon={<DeleteOutlineIcon />}>
+                  <Button size="small" color="error" onClick={() => setPortada(comic?.portada_path ? null : undefined)} startIcon={<DeleteOutlineIcon />}>
                     Quitar
                   </Button>
                 )}

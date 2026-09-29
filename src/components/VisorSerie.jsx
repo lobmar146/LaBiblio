@@ -4,6 +4,7 @@ import { Box, Button } from '@mui/material'
 import { useOnomatopeya } from '../context/OnomatopeyaContext'
 import { urlPortada } from '../lib/comics'
 import { nombreCompleto } from '../lib/coleccion'
+import { COLORES } from '../theme'
 import Portada from './Portada'
 
 // gsap + WebGL pesan bastante: solo se descargan al llegar a la vista por serie.
@@ -84,7 +85,7 @@ export default function VisorSerie({ comics }) {
         onPointerDown={alBajar}
         onClick={alHacerClic}
         onKeyDown={alTeclear}
-        sx={{ width: '100%', aspectRatio: '2 / 3', border: '3px solid #e9e2cf', bgcolor: '#0c0b10' }}
+        sx={{ width: '100%', aspectRatio: '2 / 3', border: `3px solid ${COLORES.crema}`, bgcolor: COLORES.tinta }}
       >
         {items.length > 1 && visible ? (
           <SoloSiFunciona alternativa={fija}>
@@ -95,7 +96,7 @@ export default function VisorSerie({ comics }) {
                 duration={0.9}
                 intensity={0.75}
                 radius={0}
-                overlayColor="#0c0b10"
+                overlayColor={COLORES.tinta}
                 showCaptions={false}
                 showIndicators={items.length <= 8}
                 onIndexChange={alElegir}

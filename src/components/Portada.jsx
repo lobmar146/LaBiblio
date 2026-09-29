@@ -12,7 +12,7 @@ export default function Portada({ comic, src, sx, ...props }) {
   const fallo = urlFallida === url
 
   return (
-    <Box sx={{ position: 'relative', aspectRatio: '2 / 3', overflow: 'hidden', bgcolor: '#0c0b10', ...sx }} {...props}>
+    <Box sx={{ position: 'relative', aspectRatio: '2 / 3', overflow: 'hidden', bgcolor: COLORES.tinta, ...sx }} {...props}>
       {url && !fallo ? (
         <Box
           component="img"
@@ -34,7 +34,7 @@ export default function Portada({ comic, src, sx, ...props }) {
             p: 2,
             textAlign: 'center',
             // Trama de puntos tipo Ben-Day.
-            backgroundImage: `radial-gradient(${COLORES.rojo}55 1.5px, transparent 1.5px)`,
+            backgroundImage: `radial-gradient(${COLORES.naranja}40 1.5px, transparent 1.5px)`,
             backgroundSize: '10px 10px',
           }}
         >

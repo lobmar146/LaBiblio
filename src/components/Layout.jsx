@@ -18,11 +18,11 @@ export default function Layout() {
   return (
     <Box sx={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
       <AppBar position="sticky" color="transparent" elevation={0}
-        sx={{ backdropFilter: 'blur(10px)', bgcolor: 'rgba(20,18,26,0.85)', borderBottom: 1, borderColor: 'divider' }}>
+        sx={{ backdropFilter: 'blur(10px)', bgcolor: 'rgba(11,10,15,0.9)', borderBottom: '3px solid', borderColor: 'primary.main' }}>
         <Toolbar sx={{ gap: 1 }}>
           <Box component={RouterLink} to="/" sx={{ display: 'flex', alignItems: 'center', gap: 1.25, color: 'inherit', textDecoration: 'none', mr: 'auto' }}>
             <Logo size={34} />
-            <Typography variant="h4" component="span" sx={{ fontSize: { xs: 28, sm: 32 }, lineHeight: 1 }}>
+            <Typography variant="h4" component="span" sx={{ fontSize: { xs: 28, sm: 32 }, lineHeight: 1, textShadow: '2px 2px 0 rgba(255, 138, 31, 0.55)' }}>
               La Biblio
             </Typography>
           </Box>
